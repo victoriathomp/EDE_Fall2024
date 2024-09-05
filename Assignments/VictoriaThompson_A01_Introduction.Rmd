@@ -26,7 +26,7 @@ Enter answers to the questions just below the >Answer: prompt.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: I don't think I would say that I feel "confident" about anything in this course at the moment, but rather "comfortable". "Comfortable" to me means that I have knowledge on the subject, but am always ready to learn more. I am comfortable with topics such as data visualization, as I have done that in R before. I also have a pretty good idea of coding basics and think I will be able to keep up in the early classes at least.
+> Answer: I don't think I would say that I feel "confident" about anything in this course at the moment, but rather "comfortable". "Comfortable" to me means that I have knowledge on the subject, but definitely have the capacity to learn more. I am comfortable with topics such as data visualization, as I have done that in R before. I also have a pretty good idea of coding basics and think I will be able to keep up in the early classes at least.
 
 3. Are there any components of the course about which you feel apprehensive?
 
