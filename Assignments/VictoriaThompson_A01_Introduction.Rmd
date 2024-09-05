@@ -22,22 +22,22 @@ Enter answers to the questions just below the >Answer: prompt.
 
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I have a handful of experiences with data analytics, mainly through projects in my undergrad classes. Some projects using data analytics that I have completed include transforming spatial datasets into maps detailing biodiversity in Portland, using topological elevation data over time to predict dunefield migration in coastal North Carolina, and determining the effectiveness of riparian buffers using a huge amount of Virginia climate and water quality data. Of these projects, the first and third were completed in R as part of my "Quantitative Methods" course. This course was an introduction to R, primarily as it is used for statistical anaylsis. I have not used GitHub before this course.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: I don't think I would say that I feel "confident" about anything in this course at the moment, but rather "comfortable". "Comfortable" to me means that I have knowledge on the subject, but am always ready to learn more. I am comfortable with topics such as data visualization, as I have done that in R before. I also have a pretty good idea of coding basics and think I will be able to keep up in the early classes at least.
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: I feel nervous for wrangling large datasets. I feel that the data we will be tackling will probably be in a scale larger than I have previously worked with, and that is a bit intimidating. I also lack experience in data scraping and modeling in R (though I have done it in MATLAB, which might end up being useful in terms of ways of thinking about how to use software). Finally, I am apprehensive about the group project, mainly because as a first-year, I don't know many people yet, but I hope that will not be an issue at the end of the next few weeks!
 
 
 ## 2) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
 
-> Answer: 
+> Answer: https://github.com/victoriathomp/EDE_Fall2024
 
 ## 3) Knitting
 When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Canvas 
