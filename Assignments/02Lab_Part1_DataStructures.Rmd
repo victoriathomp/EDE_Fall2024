@@ -39,10 +39,10 @@ vector1 <- c(1,2,5.3,6,-2,4) # Vector type: Numeric
 vector1
 class(vector1)
 
-vector2 <- c("one","two","three") # Vector type: 
+vector2 <- c("one","two","three") # Vector type: Character
 vector2
 
-vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) # Vector type:
+vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) # Vector type: Logical
 vector3
 ```
 
@@ -53,25 +53,25 @@ Add comments below to indicate what each operation does.(First answer is provide
 # Returns the 3rd item in the vector
 vector1[3]
 
-#
+# returns the maximum value in the vector
 max(vector1)
 
 #Create another vector of the values 10 thru 15
 vector4 <- c(10:15)
 
-#
+# combine vectors
 c(vector1, vector4)
 
-#
+# multiply vectors
 vector1 * vector4
 
-#
+# multiply every element of vector1 by 10
 vector1 * 10
 
-#
+# change text to uppercase
 toupper(vector2) 
 
-#
+# invert the logic of each element
 !vector3
 
 ```
@@ -83,16 +83,16 @@ Find a 5-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. C
 ```{r Vector Exercise}
 
 #Assign to the variable 'temps_F' a vector of high temperatures in F
-
+temps_F <- c(80,82,80,75,74)
 
 #What is the average of these temperatures 
-
+mean_tempsF <-mean (temps_F)
 
 #Compute the difference between each temperature and the average calculated above
-
+temp_difference <- (temps_F)-mean_tempsF
 
 #Subtract 32 and multiply by 5/9ths to create a vector in Celsius
-
+temp_C <- ((temps_F)-32)*(5/9)
 
 ```
 
@@ -103,11 +103,11 @@ Complete the comments below:
 # Matrices ----
 matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
 matrix1
-#matrix1 has __ rows and __ columns
+#matrix1 has _5_ rows and _4_ columns
 
 matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
 matrix2
-#matrix2 has __ rows and __ columns
+#matrix2 has _5_ rows and _4_ columns
 
 matrix3 <- matrix(
   data = 1:20, 
@@ -126,11 +126,11 @@ matrix3 <- matrix(
 Add comments in the code chunk below to indicate type of vectors created and what each operation does.
 ```{r Matrix Operations}
 
-matrix1[4, 1] #
+matrix1[4, 1] # extract element in row 4 column 1
 
-matrix1[4,  ] #
+matrix1[4,  ] # extract all elements in row 4
 
-matrix1[ , 3] #
+matrix1[ , 3] # extract all elements in col 3
 
 matrix1[c(12, 14)] #
 
@@ -163,6 +163,8 @@ matrix4['R2','C1']
 ### Exercise 1b: Matrices
 Compute the mean of column "C2" in matrix4. (Should be 14.5)
 ```{r Matrix Exercise}
+
+mean (matrix4[ ,'C2'])
 
 ```
 
@@ -202,7 +204,9 @@ list1[1:2]
 list1$name = "Janelle"
 
 #
-list1[[4]] = 44
+list1[[4]] = 44 #double brackets get the value of a specific element
+
+
 ```
 
 ## Data Frames
@@ -210,15 +214,15 @@ list1[[4]] = 44
 ```{r Creating data frames}
 # Data Frames ----
 #Create three vectors of equal length
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
+d <- c(1, 2, 3, 4) # What type of vector? num
+e <- c("red", "white", "red", NA) # What type of vector? char
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? logi
 
 #Combine the vectors into a dataframe
 dataframe1 <- data.frame(d,e,f) 
 
 #Set the column names & View
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # must comment before KNIT
 
 #Add a new column to the dataframe
 dataframe1$month <- c('Jan','Feb', 'Mar', 'Apr')
