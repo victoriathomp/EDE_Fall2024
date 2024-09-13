@@ -31,11 +31,21 @@ This exercise accompanies the lessons/labs in Environmental Data Analytics on co
 4.  Insert comments in your code to describe what you are doing.
 
 ```{r basics 1}
-#1. 
+#1. Using the seq function, I am inputting the "from" (1), "to" (55), and "by" (5) elements. Then, I assign those values to a variable ("sequen_to_55") using "<-".
 
-#2. 
+sequen_to_55 <- seq(1, 55, 5)
 
-#3. 
+#2. Using "mean" function to calculate the mean, and "median" to calculate the median. Saving each to sequen_mean and sequen_median, respectively.
+sequen_mean <- mean(sequen_to_55)
+sequen_median <- median(sequen_to_55)
+
+#3. I compare the two values in an "if" statement. If the value of sequen_mean is greater than sequen_median, then the function will print the word "greater" in the console. Using "else", is this is not true (i.e. if it is equal to or less than sequen_median), then "less or equal" will be printed in the console.
+
+if (sequen_mean > sequen_median) {
+  print("greater")
+} else {
+  print("less or equal")
+}
 
 ```
 
