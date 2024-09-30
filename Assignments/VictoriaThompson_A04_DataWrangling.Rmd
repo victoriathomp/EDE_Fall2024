@@ -31,17 +31,51 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 ```{r setup, message = FALSE}
 #1a 
+library(tidyverse)
+library(lubridate)
+library(here)
 
 #1b 
+getwd()
 
 #1c 
+  air2018 <- read.csv(
+  file = here('Data','Raw','EPAair_O3_NC2018_raw.csv'),
+  stringsAsFactors = T
+)
+  air2019 <- read.csv(
+  file = here('Data','Raw','EPAair_O3_NC2019_raw.csv'),
+  stringsAsFactors = T
+)
+  pm252018 <- read.csv(
+  file = here('Data','Raw','EPAair_PM25_NC2018_raw.csv'),
+  stringsAsFactors = T
+)
+  pm252019 <- read.csv(
+  file = here('Data','Raw','EPAair_PM25_NC2019_raw.csv'),
+  stringsAsFactors = T
+)
 
 #2 
+dimension_air2018 <- dim(air2018)
+print(air2018)
+
+dimension_air2019 <- dim(air2019)
+print(air2019)
+
+dimension_pm252018 <- dim(pm252018)
+print(pm252018)
+
+dimension_pm252019 <- dim(pm252019)
+print(pm252019)
+
 
 
 ```
 
 >All four datasets should have the same number of columns but unique record counts (rows). Do your datasets follow this pattern?
+
+> Yes, they all have 20 columns but a varying number of rows.
 
 
 ## Wrangle individual datasets to create processed files.
@@ -56,15 +90,55 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 ```{r questions 3 thru 4}
 #3
+air2018$Date <- mdy(air2018$Date)
+air2019$Date <- mdy(air2019$Date)
+pm252018$Date <- mdy(pm252018$Date)
+pm252019$Date <- mdy(pm252019$Date)
 
+#confirming classes
+class(air2018$Date)
+class(air2019$Date)
+class(pm252018$Date)
+class(pm252019$Date)
 
 #4
+air2018.v2 <- 
+  air2018 %>% 
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
+air2019.v2 <- 
+  air2019 %>% 
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+pm252018.v2 <- 
+  pm252018 %>% 
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+pm252019.v2 <- 
+  pm252019 %>% 
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
+pm252018.v2$AQS_PARAMETER_DESC <- "PM2.5"
+head(pm252018.v2$AQS_PARAMETER_DESC)
 
+pm252019.v2$AQS_PARAMETER_DESC <- "PM2.5"
+head(pm252019.v2$AQS_PARAMETER_DESC)
 
 #6
+
+  write.csv(air2018.v2,
+  file = here('Data','Processed','EPAair_O3_NC2018_processed.csv'))
+  
+  write.csv(air2019.v2 ,
+  file = here('Data','Processed','EPAair_O3_NC2019_processed.csv'))
+
+  write.csv(pm252018.v2,
+  file = here('Data','Processed','EPAair_PM25_NC2018_processed.csv'))
+  
+  write.csv(pm252019.v2,
+  file = here('Data','Processed','EPAair_PM25_NC2019_processed.csv'))
+  
 
 ```
 
