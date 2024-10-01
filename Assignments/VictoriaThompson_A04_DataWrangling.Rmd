@@ -220,7 +220,6 @@ airqualwrangled <- alldata %>%
             meanlat = mean(SITE_LATITUDE), 
             meanlong = mean(SITE_LONGITUDE)) %>% 
   mutate(
-    Date = ymd(Date),  # Ensure Date is in a proper date format
     Month = month(Date),
     Year = year(Date)
   ) 
@@ -231,7 +230,7 @@ print(airqualwrangleddim)
   
 #9
 
-# Spread nutrient data into separate columns using pivot_wider
+# spread data into separate columns using pivot_wider
 airqualwrangled.spread <- pivot_wider(airqualwrangled, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
 
 #10
@@ -243,7 +242,6 @@ print(airqualwrangled.spreadddim)
 write.csv(airqualwrangled.spread,
   file = here('Data','Processed','EPAair_O3_PM25_NC1819_Processed.csv'))
   
-
 ```
 
 
@@ -256,15 +254,37 @@ write.csv(airqualwrangled.spread,
 ```{r questions 12 and 13}
 
 #12
+#load and prep dataset
+airqualfinal <- read.csv(
+  file = here('Data','Processed','EPAair_O3_PM25_NC1819_Processed.csv'),
+  stringsAsFactors = T
+)
+airqualfinal$Date <- ymd(airqualfinal$Date)
 
+#split-apply-combine
+airqualsummary <- airqualfinal %>%
+  group_by(Site.Name, Month, Year) %>% 
+  summarise(meanAQIPM = mean(PM2.5), 
+            meanAQIOzone = mean(Ozone)) %>% 
+  drop_na(meanAQIOzone)
 
 #13
 
+airqualsummarydim <- dim(airqualsummary)
+print(airqualsummarydim)
 
 
+airqualsummary2 <- airqualfinal %>%
+  group_by(Site.Name, Month, Year) %>% 
+  summarise(meanAQIPM = mean(PM2.5), 
+            meanAQIOzone = mean(Ozone)) %>% 
+  na.omit(meanAQIOzone)
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
 
-> Answer: 
+> Answer: drop_na only removes rows within a set collumn that have an NA value.
+The collumn remains intact with all of the NA values removed. na.omit removes 
+any collumns that have at least one NA. In context, this means that using na.omit
+would remove the entire ozone collumn because it contains several NAs.
 
