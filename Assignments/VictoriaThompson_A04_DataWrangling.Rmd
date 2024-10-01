@@ -31,14 +31,17 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 ```{r setup, message = FALSE}
 #1a 
+#load packages
 library(tidyverse)
 library(lubridate)
 library(here)
 
 #1b 
+#check WD
 getwd()
 
 #1c 
+#read in datasets
   air2018 <- read.csv(
   file = here('Data','Raw','EPAair_O3_NC2018_raw.csv'),
   stringsAsFactors = T
@@ -57,6 +60,7 @@ getwd()
 )
 
 #2 
+#get dimensions and print
 dimension_air2018 <- dim(air2018)
 print(air2018)
 
@@ -88,10 +92,11 @@ print(pm252019)
 
 ```{r questions 3 thru 4}
 #3
-air2018$Date <- ymd(air2018$Date)
-air2019$Date <- ymd(air2019$Date)
-pm252018$Date <- ymd(pm252018$Date)
-pm252019$Date <- ymd(pm252019$Date)
+#changing factors to dates
+air2018$Date <- mdy(air2018$Date)
+air2019$Date <- mdy(air2019$Date)
+pm252018$Date <- mdy(pm252018$Date)
+pm252019$Date <- mdy(pm252019$Date)
 
 #confirming classes
 class(air2018$Date)
@@ -100,6 +105,7 @@ class(pm252018$Date)
 class(pm252019$Date)
 
 #4
+#select data
 air2018.v2 <- 
   air2018 %>% 
   select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
@@ -117,14 +123,15 @@ pm252019.v2 <-
   select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
+#write over values so that all in the column are "PM2.5"
 pm252018.v2$AQS_PARAMETER_DESC <- "PM2.5"
-head(pm252018.v2$AQS_PARAMETER_DESC)
+head(pm252018.v2$AQS_PARAMETER_DESC) #check to make sure values are all PM2.5
 
 pm252019.v2$AQS_PARAMETER_DESC <- "PM2.5"
-head(pm252019.v2$AQS_PARAMETER_DESC)
+head(pm252019.v2$AQS_PARAMETER_DESC) #check to make sure values are all PM2.5
 
 #6
-
+#save csvs
   write.csv(air2018.v2,
   file = here('Data','Processed','EPAair_O3_NC2018_processed.csv'))
   
@@ -170,33 +177,8 @@ head(pm252019.v2$AQS_PARAMETER_DESC)
 
 ```{r questions 7 thru 11}
 #7 
-# load saved datasets
-  air2018proc <- read.csv(
-  file = here('Data','Processed','EPAair_O3_NC2018_processed.csv'),
-  stringsAsFactors = T
-)
- 
-  air2019proc <- read.csv(
-  file = here('Data','Processed','EPAair_O3_NC2019_processed.csv'),
-  stringsAsFactors = T
-)
-  pm252018proc <- read.csv(
-  file = here('Data','Processed','EPAair_PM25_NC2018_processed.csv'),
-  stringsAsFactors = T
-)
-  pm252019proc <- read.csv(
-  file = here('Data','Processed','EPAair_PM25_NC2019_processed.csv'),
-  stringsAsFactors = T
-)
-  
-#converting date collumn to "Date" type from "Factor"
-  
-air2018proc$Date <- ymd(air2018proc$Date)
-air2019proc$Date <- ymd(air2019proc$Date)
-pm252018proc$Date <- ymd(pm252018proc$Date)
-pm252019proc$Date <- ymd(pm252019proc$Date)
-
-alldata <- rbind(air2018proc,air2019proc,pm252018proc,pm252019proc)
+#using rbind to combine all datasets
+alldata <- rbind(air2018.v2, air2019.v2, pm252018.v2,pm252019.v2)
 
 #8 
 
@@ -207,9 +189,6 @@ sharedsites <- c(
   "West Johnston Co.", "Garinger High School", "Castle Hayne",
   "Pitt Agri. Center", "Bryson City", "Millbrook School"
 )
-
-# changing factor to date 
-alldata$Date <- ymd(alldata$Date)
 
 
 # pipe function
@@ -234,11 +213,12 @@ print(airqualwrangleddim)
 airqualwrangled.spread <- pivot_wider(airqualwrangled, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
 
 #10
-
+#check and print dimensions
 airqualwrangled.spreadddim <- dim(airqualwrangled.spread)
 print(airqualwrangled.spreadddim)
 
 #11
+#save csv
 write.csv(airqualwrangled.spread,
   file = here('Data','Processed','EPAair_O3_PM25_NC1819_Processed.csv'))
   
@@ -254,37 +234,33 @@ write.csv(airqualwrangled.spread,
 ```{r questions 12 and 13}
 
 #12
-#load and prep dataset
-airqualfinal <- read.csv(
-  file = here('Data','Processed','EPAair_O3_PM25_NC1819_Processed.csv'),
-  stringsAsFactors = T
-)
-airqualfinal$Date <- ymd(airqualfinal$Date)
-
 #split-apply-combine
-airqualsummary <- airqualfinal %>%
+airqualsummary <- airqualwrangled.spread %>%
   group_by(Site.Name, Month, Year) %>% 
   summarise(meanAQIPM = mean(PM2.5), 
             meanAQIOzone = mean(Ozone)) %>% 
   drop_na(meanAQIOzone)
 
 #13
-
+#check and print dimensions
 airqualsummarydim <- dim(airqualsummary)
 print(airqualsummarydim)
 
-
-airqualsummary2 <- airqualfinal %>%
-  group_by(Site.Name, Month, Year) %>% 
+#testing na.omit
+airqualsummary2 <- airqualwrangled.spread %>%
+ group_by(Site.Name, Month, Year) %>% 
   summarise(meanAQIPM = mean(PM2.5), 
             meanAQIOzone = mean(Ozone)) %>% 
   na.omit(meanAQIOzone)
+
+
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
 
 > Answer: drop_na only removes rows within a set collumn that have an NA value.
 The collumn remains intact with all of the NA values removed. na.omit removes 
-any collumns that have at least one NA. In context, this means that using na.omit
-would remove the entire ozone collumn because it contains several NAs.
+any rows that have at least one NA in any column. In context, 
+this means that using na.omit would remove the entire row of data if
+an ozone collumn contains an NA.
 
