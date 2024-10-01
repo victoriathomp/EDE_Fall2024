@@ -69,8 +69,6 @@ print(pm252018)
 dimension_pm252019 <- dim(pm252019)
 print(pm252019)
 
-
-
 ```
 
 >All four datasets should have the same number of columns but unique record counts (rows). Do your datasets follow this pattern?
@@ -90,10 +88,10 @@ print(pm252019)
 
 ```{r questions 3 thru 4}
 #3
-air2018$Date <- mdy(air2018$Date)
-air2019$Date <- mdy(air2019$Date)
-pm252018$Date <- mdy(pm252018$Date)
-pm252019$Date <- mdy(pm252019$Date)
+air2018$Date <- ymd(air2018$Date)
+air2019$Date <- ymd(air2019$Date)
+pm252018$Date <- ymd(pm252018$Date)
+pm252019$Date <- ymd(pm252019$Date)
 
 #confirming classes
 class(air2018$Date)
@@ -172,19 +170,79 @@ head(pm252019.v2$AQS_PARAMETER_DESC)
 
 ```{r questions 7 thru 11}
 #7 
+# load saved datasets
+  air2018proc <- read.csv(
+  file = here('Data','Processed','EPAair_O3_NC2018_processed.csv'),
+  stringsAsFactors = T
+)
+ 
+  air2019proc <- read.csv(
+  file = here('Data','Processed','EPAair_O3_NC2019_processed.csv'),
+  stringsAsFactors = T
+)
+  pm252018proc <- read.csv(
+  file = here('Data','Processed','EPAair_PM25_NC2018_processed.csv'),
+  stringsAsFactors = T
+)
+  pm252019proc <- read.csv(
+  file = here('Data','Processed','EPAair_PM25_NC2019_processed.csv'),
+  stringsAsFactors = T
+)
+  
+#converting date collumn to "Date" type from "Factor"
+  
+air2018proc$Date <- ymd(air2018proc$Date)
+air2019proc$Date <- ymd(air2019proc$Date)
+pm252018proc$Date <- ymd(pm252018proc$Date)
+pm252019proc$Date <- ymd(pm252019proc$Date)
 
+alldata <- rbind(air2018proc,air2019proc,pm252018proc,pm252019proc)
 
 #8 
 
+#storing shared sites
+sharedsites <- c(
+  "Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue",
+  "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain",
+  "West Johnston Co.", "Garinger High School", "Castle Hayne",
+  "Pitt Agri. Center", "Bryson City", "Millbrook School"
+)
 
+# changing factor to date 
+alldata$Date <- ymd(alldata$Date)
+
+
+# pipe function
+airqualwrangled <- alldata %>%
+  filter(Site.Name %in% sharedsites) %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>% 
+  summarise(meanAQI = mean(DAILY_AQI_VALUE), 
+            meanlat = mean(SITE_LATITUDE), 
+            meanlong = mean(SITE_LONGITUDE)) %>% 
+  mutate(
+    Date = ymd(Date),  # Ensure Date is in a proper date format
+    Month = month(Date),
+    Year = year(Date)
+  ) 
+
+# check dimensions of airqualwrangled to see if it matches 14,752 x 9
+airqualwrangleddim <- dim(airqualwrangled)
+print(airqualwrangleddim)
+  
 #9
 
+# Spread nutrient data into separate columns using pivot_wider
+airqualwrangled.spread <- pivot_wider(airqualwrangled, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
 
 #10
 
+airqualwrangled.spreadddim <- dim(airqualwrangled.spread)
+print(airqualwrangled.spreadddim)
 
 #11
-
+write.csv(airqualwrangled.spread,
+  file = here('Data','Processed','EPAair_O3_PM25_NC1819_Processed.csv'))
+  
 
 ```
 
