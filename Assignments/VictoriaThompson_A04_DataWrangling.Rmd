@@ -62,16 +62,16 @@ getwd()
 #2 
 #get dimensions and print
 dimension_air2018 <- dim(air2018)
-print(air2018)
+print(dimension_air2018)
 
 dimension_air2019 <- dim(air2019)
-print(air2019)
+print(dimension_air2019)
 
 dimension_pm252018 <- dim(pm252018)
-print(pm252018)
+print(dimension_pm252018)
 
 dimension_pm252019 <- dim(pm252019)
-print(pm252019)
+print(dimension_pm252019)
 
 ```
 
@@ -202,6 +202,9 @@ airqualwrangled <- alldata %>%
     Month = month(Date),
     Year = year(Date)
   ) 
+
+airqualwrangled2 <- alldata %>%
+  filter(Site.Name %in% sharedsites)
 
 # check dimensions of airqualwrangled to see if it matches 14,752 x 9
 airqualwrangleddim <- dim(airqualwrangled)
