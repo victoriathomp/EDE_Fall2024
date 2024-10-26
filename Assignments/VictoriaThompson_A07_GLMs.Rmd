@@ -38,7 +38,7 @@ library(dplyr)
 
 
 #load in raw data
-NTL.raw <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"),
+NTL.raw <- read.csv("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv",
                     stringsAsFactors = TRUE)
                   
 #put dates in date format
@@ -49,8 +49,7 @@ mytheme <- theme_gray(base_size = 12) +
   theme(axis.text = element_text(color = "darkblue"),
         legend.position = "bottom",
          plot.title = element_text(face = "bold", size = 16, 
-                                   color = "black", hjust = 1),
-         legend.position = "bottom")
+                                   color = "black", hjust = 1))
 
 # set default 
 theme_set(mytheme)
@@ -61,6 +60,7 @@ theme_set(mytheme)
 Our first research question is: Does mean lake temperature recorded during July change with depth across all lakes?
 
 3. State the null and alternative hypotheses for this question:
+
 > Answer:
 H0: The mean lake temperature recorded during July does not change with depth 
 across all lakes.
@@ -184,7 +184,6 @@ from the new R^2 value. This means that the combination of these variables
 explains more of the variation than just depth alone, since the regression with 
 just depth could only explain 73.87% of variation in temperature. 
 
-
 ---
 ## Analysis of Variance
 
@@ -192,21 +191,50 @@ just depth could only explain 73.87% of variation in temperature.
 
 ```{r anova.model}
 #12
+NTL.filtered.lakename <- NTL.raw %>% 
+  filter(month(sampledate) == 7)  %>% #month 7 = July
+  select(lakename, year4, daynum, depth, temperature_C,lakename) %>%  
+  # Select specific columns
+  drop_na() #drop entire cases with na's
 
+#anova 
+lake_anova <- aov(temperature_C ~ lakename, data = NTL.filtered.lakename)
+summary(lake_anova)
+
+#linear model 
+
+lake_lm <- lm(temperature_C ~ lakename, data = NTL.filtered.lakename)
+summary(lake_lm)
 
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
-
-
+> Answer: The ANOVA results indicate a statistically significant difference 
+in mean temperature among the lakes in July, with a p-value of less than 2e-16
+and an F-value of 50. This very low p-value suggests strong evidence to reject
+the null hypothesis, meaning that at least one lake's mean temperature 
+is significantly different from the others.
 
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2}
 #14.
 
+lake.plot <- ggplot(NTL.filtered.lakename, aes(x = depth, y = temperature_C,
+                                               color = lakename)) +
+  geom_point(alpha = 0.5) +  # make points 50% transparent
+  geom_smooth(method = "lm", se = FALSE) +  # add linear model line for each lake
+  scale_y_continuous(limits = c(0, 35), expand = c(0, 0)) +  # set y-axis limits
+  labs(
+    title = "Temperature by Depth in July Across Lakes",
+    x = "Depth (m)",
+    y = "Temperature (C)",
+    color = "Lake"
+  ) +
+  mytheme
+
+lake.plot
 
 ```
 
@@ -214,26 +242,47 @@ just depth could only explain 73.87% of variation in temperature.
 
 ```{r tukey.test}
 #15
-
-
+tukey.lake <- TukeyHSD(lake_anova)
+print(tukey.lake)
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
-
- 
+>Answer: For lakes with the statistically same mean temperature, their p-value
+needs to be above 0.05. For all of the pairs including Peter Lake, this includes 
+Paul Lake and Ward Lake. East Long Lake and Hummingbird Lake have no pairings where
+p > 0.05, meaning their mean temperatures are statistically different from 
+all the other lakes.
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
-
-
+>Answer: You could perform a t-test. A t-test can be used to determine 
+whether there is a significant difference between the means of two groups.
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
+# filter dataset
+NTL.filtered.CramptonandWard <- NTL.raw %>% 
+  filter(month(sampledate) == 7)  %>%
+  filter(lakename == c('Crampton Lake', 'Ward Lake')) %>% #month 7 = July
+  select(lakename, year4, daynum, depth, temperature_C) %>%  
+  # Select specific columns
+  drop_na() #drop entire cases with na's
+
+# two sample t test
+NTL.twosample <- t.test(NTL.filtered.CramptonandWard$temperature_C ~ 
+                          NTL.filtered.CramptonandWard$lakename)
+NTL.twosample
 
 ```
 
->Answer: 
+>Answer: The test provides a t-value of 1.4735 and a p-value of 0.1441. Because
+the p value is greater than 0.05, there is not  sufficient evidence to conclude
+that the mean temperatures are different. In question 16, the results of the
+Tukey test also suggested that Crampton Lake and Ward Lake do not have a 
+significant difference in mean temperatures. This conclusion aligns with the 
+results of the t-test, which also found no significant difference.
+Both tests indicate that the mean temperatures for Crampton Lake and Ward Lake 
+statistically indistinguishable. I would not say that they are equal, but they 
+are at least statistically the same.
