@@ -1,6 +1,6 @@
 ---
 title: "Assignment 8: Time Series Analysis"
-author: "Student Name"
+author: "Victoria Thompson"
 date: "Fall 2024"
 output: pdf_document
 geometry: margin=2.54cm
@@ -27,6 +27,24 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 * Set your ggplot theme
 
 ```{r}
+#check working directory
+getwd() 
+
+#load packages
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(trend)
+                    
+# ggplot theme
+mytheme <- theme_gray(base_size = 12) +
+  theme(axis.text = element_text(color = "darkblue"),
+        legend.position = "right",
+         plot.title = element_text(face = "bold", size = 16, 
+                                   color = "black", hjust = 0.5))
+
+# set as default 
+theme_set(mytheme)
 
 ```
 
@@ -34,8 +52,36 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 2. Import the ten datasets from the Ozone_TimeSeries folder in the Raw data folder. These contain ozone concentrations at Garinger High School in North Carolina from 2010-2019 (the EPA air database only allows downloads for one year at a time). Import these either individually or in bulk and then combine them into a single dataframe named `GaringerOzone` of 3589 observation and 20 variables. 
 
 ```{r, message = FALSE}
-#1
+#load individual data frames
+EPA2019 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2018 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2017 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2016 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2015 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2014 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2013 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2012 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2011 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv",
+                    stringsAsFactors = TRUE)
+EPA2010 <- read.csv("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv",
+                    stringsAsFactors = TRUE)
 
+#combine data frames 
+EPA_combined <- rbind(EPA2019,EPA2018,EPA2017,EPA2016,EPA2015,EPA2014,EPA2013,
+                      EPA2012,EPA2011,EPA2010,
+                    stringsAsFactors = TRUE)
+
+#check dataframe size
+EPA_combined_dim <- dim(EPA_combined)
+print(EPA_combined_dim)
 ```
 
 ## Wrangle
@@ -49,15 +95,25 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 6. Use a `left_join` to combine the data frames. Specify the correct order of data frames within this function so that the final dimensions are 3652 rows and 3 columns. Call your combined data frame GaringerOzone. 
 
 ```{r}
-# 3
+# 3 Set date column as a date class using lubridate
+EPA_combined$Date <- mdy(EPA_combined$Date)
 
-# 4
+# 4 Wrangle dataset
+EPA_combined_wrangled <- EPA_combined %>% select(Date, 
+                     Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
 
-# 5
+# 5 New data frame with dates 2010-01-01 to 2019-12-32
+Days <- as.data.frame((seq(as.Date("2010-01-01"), 
+                           as.Date("2019-12-31"), by = "day")))
+#rename date column
+colnames(Days) <- "Date"
 
-# 6
+# 6 Join data frames
+GaringerOzone <- left_join(Days, EPA_combined_wrangled, by = "Date")
 
-
+#check dimensions
+garinger_ozone_dim <- dim(GaringerOzone)
+print(garinger_ozone_dim)
 ```
 
 ## Visualize
@@ -67,9 +123,28 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 ```{r}
 #7
 
+ozone.vs.time <- ggplot(data = GaringerOzone, aes(x = Date, 
+                                  y = Daily.Max.8.hour.Ozone.Concentration)) +
+  geom_line(color = "blue") + 
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  labs(
+    title = "Ozone Concentrations over Time",
+    x = "Date",
+    y = "Ozone Concentration (ppm)"
+  ) +
+  mytheme    
+
+ozone.vs.time
+
 ```
 
 >Answer:
+Yes, the plot suggests an overall decrease in ozone concentration over time.
+The smoothed linear trend line (red) shows a stead decline despite the 
+significant variation of the data (blue).
+
+
+
 
 ## Time Series Analysis
 
