@@ -1,5 +1,5 @@
 ---
-title: "Assignment 7: GLMs (Linear Regressios, ANOVA, & t-tests)"
+title: "Assignment 7: GLMs (Linear Regressions, ANOVA, & t-tests)"
 author: "Victoria Thompson"
 date: "Fall 2024"
 output: pdf_document
@@ -47,7 +47,7 @@ NTL.raw$sampledate <- mdy(NTL.raw$sampledate)
 #2
 mytheme <- theme_gray(base_size = 12) +
   theme(axis.text = element_text(color = "darkblue"),
-        legend.position = "bottom",
+        legend.position = "right",
          plot.title = element_text(face = "bold", size = 16, 
                                    color = "black", hjust = 1))
 
@@ -162,10 +162,22 @@ NTL.subset <- NTL.raw %>%
   select(year4, daynum, depth, temperature_C) %>% 
   na.omit()
 
+#Run AIC
+NTLAIC <- lm(data = NTL.subset, temperature_C ~ depth + year4 + 
+              daynum)
+
+#Choose a model by AIC in a Stepwise Algorithm
+step(NTLAIC)
+NTLmodel <- lm(data = NTL.subset, temperature_C ~ depth + year4 + 
+              daynum)
+summary(NTLAIC)
+
+#create a plot to help visualize
+
 NTLcor <- cor(NTL.subset)
 corrplot(NTLcor , upper= "ellipse")
 
-#the plot indicates that depth and daynum may have a role in predicting 
+#the plot indicates that depth and daynum may both have a role in predicting 
 #temperature
 
 #10
@@ -249,10 +261,11 @@ print(tukey.lake)
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
 >Answer: For lakes with the statistically same mean temperature, their p-value
-needs to be above 0.05. For all of the pairs including Peter Lake, this includes 
-Paul Lake and Ward Lake. East Long Lake and Hummingbird Lake have no pairings where
-p > 0.05, meaning their mean temperatures are statistically different from 
-all the other lakes.
+needs to be below 0.05 to reject the null hypothesis (which is that lake 
+temperature is the same at all lakes). For all of the pairs including Peter 
+Lake, this includes Paul Lake and Ward Lake. There are not any lakes with mean 
+temperatures that are statistically distinct from all other lakes. Each lake 
+has at least one other lake where the p-value is greater than 0.05.
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
@@ -278,11 +291,10 @@ NTL.twosample
 ```
 
 >Answer: The test provides a t-value of 1.4735 and a p-value of 0.1441. Because
-the p value is greater than 0.05, there is not  sufficient evidence to conclude
+the p value is greater than 0.05, there is not sufficient evidence to conclude
 that the mean temperatures are different. In question 16, the results of the
 Tukey test also suggested that Crampton Lake and Ward Lake do not have a 
 significant difference in mean temperatures. This conclusion aligns with the 
 results of the t-test, which also found no significant difference.
 Both tests indicate that the mean temperatures for Crampton Lake and Ward Lake 
-statistically indistinguishable. I would not say that they are equal, but they 
-are at least statistically the same.
+are statistically indistinguishable. 
